@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.Map;
 
 @RestController
@@ -15,26 +14,40 @@ public class AuthController {
     @Autowired
     private JwtUtil jwtUtil;
 
-    // TEMP login (hardcoded user)
-    @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody Map<String, String> request) {
+    @PostMapping(
+            value = "/login",
+            consumes = "application/json",
+            produces = "application/json"
+    )
+    public ResponseEntity<?> login(
+            @RequestBody(required = false) Map<String, String> request
+    ) {
+
+        // 🔒 Absolute safety: no crashes
+        if (request == null) {
+            return ResponseEntity.badRequest()
+                    .body(Map.of("error", "Request body missing"));
+        }
 
         String username = request.get("username");
         String password = request.get("password");
 
-        // 🔴 Hardcoded check (we replace with DB later)
-        if ("admin".equals(username) && "admin123".equals(password)) {
-
-            String token = jwtUtil.generateToken(username);
-
-            Map<String, String> response = new HashMap<>();
-            response.put("token", token);
-
-            return ResponseEntity.ok(response);
+        if (username == null || password == null) {
+            return ResponseEntity.badRequest()
+                    .body(Map.of("error", "Username or password missing"));
         }
 
-        return ResponseEntity.status(401).body(
-                Map.of("error", "Invalid credentials")
-        );
+        // 🔴 Phase 2: hardcoded auth (intentional)
+        if ("admin".equals(username) && "admin123".equals(password)) {
+
+            String token = jwtUtil.generateToken(username, "ADMIN");
+
+            return ResponseEntity.ok(
+                    Map.of("token", token)
+            );
+        }
+
+        return ResponseEntity.status(401)
+                .body(Map.of("error", "Invalid credentials"));
     }
 }

@@ -4,6 +4,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.lang.NonNull;
@@ -27,8 +28,13 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
         String path = request.getRequestURI();
 
-        // Public endpoints
-        if (path.equals("/test") || path.equals("/auth/login")) {
+        // Public & dev endpoints
+        if (
+            path.equals("/test") ||
+            path.equals("/auth/login") ||
+            path.startsWith("/h2-console")
+        ) {
+            response.setHeader("X-Frame-Options", "SAMEORIGIN");
             filterChain.doFilter(request, response);
             return;
         }
