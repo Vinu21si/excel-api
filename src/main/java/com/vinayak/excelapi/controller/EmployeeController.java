@@ -1,23 +1,24 @@
 package com.vinayak.excelapi.controller;
 
 import com.vinayak.excelapi.model.Employee;
-import com.vinayak.excelapi.service.ExcelService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+import com.vinayak.excelapi.service.EmployeeService;
+
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
+@RequestMapping("/employees")
 public class EmployeeController {
 
-    private final ExcelService excelService;
+    private final EmployeeService service;
 
-    public EmployeeController(ExcelService excelService) {
-        this.excelService = excelService;
+    public EmployeeController(EmployeeService service) {
+        this.service = service;
     }
 
-    @GetMapping("/employees")
+    @GetMapping
     public List<Employee> getEmployees() {
-        return excelService.readEmployees();
+        return service.getEmployees();
     }
 }

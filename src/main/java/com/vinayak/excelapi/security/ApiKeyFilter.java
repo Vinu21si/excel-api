@@ -9,9 +9,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
-// 🔴 API KEY SECURITY DISABLED (JWT IS USED INSTEAD)
-// @Component
-// @Order(Ordered.HIGHEST_PRECEDENCE)
+// API KEY DISABLED — JWT USED INSTEAD
 public class ApiKeyFilter extends OncePerRequestFilter {
 
     @Override
@@ -21,7 +19,6 @@ public class ApiKeyFilter extends OncePerRequestFilter {
             @NonNull FilterChain filterChain)
             throws ServletException, IOException {
 
-        // Do nothing — pass request forward
         filterChain.doFilter(request, response);
     }
 }

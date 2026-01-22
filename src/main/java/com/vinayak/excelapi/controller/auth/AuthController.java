@@ -1,6 +1,8 @@
 package com.vinayak.excelapi.controller.auth;
 
+import com.vinayak.excelapi.model.Role;
 import com.vinayak.excelapi.security.jwt.JwtUtil;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,36 +16,27 @@ public class AuthController {
     @Autowired
     private JwtUtil jwtUtil;
 
-    @PostMapping(
-            value = "/login",
-            consumes = "application/json",
-            produces = "application/json"
-    )
-    public ResponseEntity<?> login(
-            @RequestBody(required = false) Map<String, String> request
-    ) {
-
-        // 🔒 Absolute safety: no crashes
-        if (request == null) {
-            return ResponseEntity.badRequest()
-                    .body(Map.of("error", "Request body missing"));
-        }
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody Map<String, String> request) {
 
         String username = request.get("username");
         String password = request.get("password");
 
-        if (username == null || password == null) {
-            return ResponseEntity.badRequest()
-                    .body(Map.of("error", "Username or password missing"));
+        if ("admin".equals(username) && "admin123".equals(password)) {
+            return ResponseEntity.ok(
+                    Map.of("token", jwtUtil.generateToken(username, Role.ADMIN.name()))
+            );
         }
 
-        // 🔴 Phase 2: hardcoded auth (intentional)
-        if ("admin".equals(username) && "admin123".equals(password)) {
-
-            String token = jwtUtil.generateToken(username, "ADMIN");
-
+        if ("manager".equals(username) && "manager123".equals(password)) {
             return ResponseEntity.ok(
-                    Map.of("token", token)
+                    Map.of("token", jwtUtil.generateToken(username, Role.MANAGER.name()))
+            );
+        }
+
+        if ("user".equals(username) && "user123".equals(password)) {
+            return ResponseEntity.ok(
+                    Map.of("token", jwtUtil.generateToken(username, Role.USER.name()))
             );
         }
 
